@@ -21,7 +21,8 @@ sq_to_test= np.load('sq_to_test_complex.npy', allow_pickle=True)
 
 
 def build_model(x_train, sq_train, epoch, my_batch_size, 
-                model_name, cat_acc_file_name, loss_file_name):
+                model_name, cat_acc_file_name,
+                loss_file_name):
     """
     Builds and trains a model for predicting the a square to move from or to
     based on an input board
@@ -46,11 +47,11 @@ def build_model(x_train, sq_train, epoch, my_batch_size,
     """
     
     model = km.Sequential()
-    model.add(kl.Conv3D(64, kernel_size=(6, 5, 5), 
+    model.add(kl.Conv3D(800, kernel_size=(6, 5, 5), 
                                input_shape=(6, 8, 8, 1), activation='tanh'))
-    model.add(kl.Conv3D(64, kernel_size=(1, 3, 3), 
+    model.add(kl.Conv3D(400, kernel_size=(1, 3, 3), 
                                input_shape=(6, 8, 8, 1), activation='tanh'))
-    model.add(kl.Conv3D(64, kernel_size=(1, 1, 1), 
+    model.add(kl.Conv3D(200, kernel_size=(1, 1, 1), 
                                input_shape=(6, 8, 8, 1), activation='tanh'))
     model.add(kl.Flatten())
     model.add(kl.Dense(name='output', units=64))
@@ -65,10 +66,13 @@ def build_model(x_train, sq_train, epoch, my_batch_size,
             model.history.history['loss'])
     np.save(cat_acc_file_name+'.npy', 
             model.history.history['categorical_accuracy'])
+    return model
 
-# model_moveFrom = build_model(x_train, sq_from_train, 400, 20, 
-#             "Kasparov_moveFrom_complex_400", "cat_acc_moveFrom_complex_400", 
-#             "loss_moveFrom_complex_400")
+model_moveFrom = build_model(x_train, sq_from_train, 25, 500,
+            "Kasparov_moveFrom_complex_new_features", 
+            "cat_acc_moveFrom_complex_new_features", 
+            "loss_moveFrom_complex_new_features")
+print(model_moveFrom.evaluate(x_test, sq_from_test))
 # model_moveTo = build_model(x_train, sq_to_train, 400, 20, 
 #             "Kasparov_moveTo_complex_400", "cat_acc_moveTo_complex_400", 
 #             "loss_moveTo_complex_400")
